@@ -1,25 +1,42 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import axios from 'axios';
 import './App.css';
 
-function App() {
+const API_KEY = '39939405-885e8f46b5cb8dd310ebbe929';
+
+const App = () => {
+  const [searchText, setSearchText] = useState('');
+  const [images, setImages] = useState([]);
+
+  const handleSearch = () => {
+    const url = `https://pixabay.com/api/?key=${API_KEY}&q=${encodeURIComponent(searchText)}`;
+
+    axios.get(url)
+      .then(response => {
+        setImages(response.data.hits);
+      })
+      .catch(error => console.error('Error fetching images:', error));
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Enter search text"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        />
+        <button onClick={handleSearch}>Search</button>
+      </div>
+
+      <div className="image-grid">
+        {images.map(image => (
+          <img key={image.id} src={image.webformatURL} alt={image.tags} />
+        ))}
+      </div>
     </div>
   );
-}
+};
 
 export default App;
